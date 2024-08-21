@@ -35,15 +35,15 @@ def plot_tags(tag_data):
         y_coords = [corner[1] for corner in corners] + [corners[0][1]]
         z_coords = [corner[2] for corner in corners] + [corners[0][2]]
 
-        # # Plot the rectangle
-        # fig.add_trace(go.Scatter3d(
-        #     x=x_coords,
-        #     y=y_coords,
-        #     z=z_coords,
-        #     mode='lines',
-        #     line=dict(color='blue', width=2),
-        #     name=f'Tag {tag_id}'
-        # ))
+        # Plot the rectangle
+        fig.add_trace(go.Scatter3d(
+            x=x_coords,
+            y=y_coords,
+            z=z_coords,
+            mode='lines',
+            line=dict(color='blue', width=2),
+            name=f'Tag {tag_id}'
+        ))
 
         # Add the tag ID in the center of the rectangle
         center_x = sum(x_coords[:-1]) / 4

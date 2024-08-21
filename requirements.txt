@@ -1,7 +1,6 @@
-cv2
+opencv-python
 pupil_apriltags
 plotly
-json
 numpy
 heapq
 collections

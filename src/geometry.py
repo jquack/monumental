@@ -34,16 +34,7 @@ def calculate_distance_between_tags(detected_tags, tag_id_1, tag_id_2):
 
 def calculate_R_and_t_to_origin(tag_collection, path):
     """
-    Calculates the relative position of the end tag in the path relative to the start tag (origin).
-    
-    The path is a list of tuples where each tuple contains:
-    - The start node (tag ID).
-    - The end node (tag ID).
-    - The frame index where the transformation between the two nodes is detected.
-    
-    This function iterates through the path, applying the transformations (rotation and translation)
-    from the tag_collection at each frame index to accumulate the overall transformation from the 
-    start node (origin) to the end node.
+    Calculates the relative position and orientation of the end tag in the path relative to the start tag (origin).
     
     Args:
     - tag_collection (list of lists): A list where each element is a list of Detection objects from a frame.
@@ -51,6 +42,7 @@ def calculate_R_and_t_to_origin(tag_collection, path):
     
     Returns:
     - relative_position (numpy array): The position of the end node relative to the origin in millimeters.
+    - relative_rotation (numpy array): The rotation matrix of the end node relative to the origin.
     """
     current_position = np.array([0.0, 0.0, 0.0])  # Start at the origin
     current_rotation = np.eye(3)  # Start with no rotation (identity matrix)
@@ -63,12 +55,10 @@ def calculate_R_and_t_to_origin(tag_collection, path):
         start_tag = next(tag for tag in frame if tag.tag_id == start_node)
         end_tag = next(tag for tag in frame if tag.tag_id == end_node)
         
-        
         # Calculate the relative rotation and translation between the start and end tags
         rotation_matrix = np.array(end_tag.pose_R)
         translation_vector = np.array(end_tag.pose_t).flatten() - np.array(start_tag.pose_t).flatten()
-        # rotation_matrix = np.array(start_tag.pose_R).T  # Use the transpose of start tag's rotation
-        # translation_vector = np.array(start_tag.pose_t).flatten() - np.array(end_tag.pose_t).flatten()
+        # TODO: this is wrong the camera position changes so eg the z distance changes so this needs to be accounted for
         
         # Transform the translation vector by the current rotation
         transformed_translation = np.dot(current_rotation, translation_vector)
@@ -81,7 +71,6 @@ def calculate_R_and_t_to_origin(tag_collection, path):
     
     return current_position, current_rotation
 
-
 def calculate_tag_corners(tag_collection, path, tag_size_mm=42.0):
     """
     Calculates the positions of the corners of the tag based on the relative translation and rotation from the origin.
@@ -89,7 +78,7 @@ def calculate_tag_corners(tag_collection, path, tag_size_mm=42.0):
     Args:
     - tag_collection (list of lists): A list where each element is a list of Detection objects from a frame.
     - path (list of tuples): The path from the origin to the target tag, including frame indexes.
-    - tag_size (float): The size of the tag (length of a side) in millimeters. Default is 42.0 mm.
+    - tag_size_mm (float): The size of the tag (length of a side) in millimeters. Default is 42.0 mm.
     
     Returns:
     - tag_data (list of dicts): A list where each element is a dictionary containing the tag ID and the 
@@ -118,6 +107,10 @@ def calculate_tag_corners(tag_collection, path, tag_size_mm=42.0):
         # Calculate the global positions of the corners by applying the rotation and translation
         global_corners = [np.dot(relative_rotation, corner) + relative_position for corner in local_corners]
         
+        # Correct the X-axis (flip X coordinates)
+        # TODO: don't, fix translation
+        global_corners = [[-corner[0], corner[1], corner[2]] for corner in global_corners]
+        
         # Get the tag ID for the end tag
         end_tag_id = path[0][0]
     
@@ -131,6 +124,7 @@ def calculate_tag_corners(tag_collection, path, tag_size_mm=42.0):
     })
     
     return tag_data
+
 
 def get_center_from_corners(corners):
     x_coords = [corner[0] for corner in corners] + [corners[0][0]] 

@@ -71,7 +71,7 @@ def main():
     for tag_id, path in paths.items():
         tag_positions.append(calculate_tag_corners(tag_collection=detected_tags, 
                                                                 path=path,
-                                                                tag_size_mm=tag_size/1000))
+                                                                tag_size_mm=tag_size*1000))
         # if tag_id in test_tags:
         #     center = get_center_from_corners(corners=corners)
         #     distance = np.linalg.norm(center)
@@ -83,7 +83,7 @@ def main():
         json.dump(tag_positions, f, indent=2)
     print(f".. results saved in {output_file}")
 
-    ## Vizualize in 3D for debugging purposes
+    # # Vizualize in 3D for debugging purposes
     # fig = plot_tags(tag_data=tag_positions)
     # fig.show()
     
