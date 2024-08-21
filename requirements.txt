@@ -1,0 +1,9 @@
+cv2
+pupil_apriltags
+plotly
+json
+numpy
+heapq
+collections
+moms_apriltag
+matplotlib
