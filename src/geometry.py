@@ -58,7 +58,7 @@ def calculate_R_and_t_to_origin(tag_collection, path):
         # Calculate the relative rotation and translation between the start and end tags
         rotation_matrix = np.array(end_tag.pose_R)
         translation_vector = np.array(end_tag.pose_t).flatten() - np.array(start_tag.pose_t).flatten()
-        # TODO: this is wrong the camera position changes so eg the z distance changes so this needs to be accounted for
+        # TODO: something is wrong in here
         
         # Transform the translation vector by the current rotation
         transformed_translation = np.dot(current_rotation, translation_vector)

@@ -7,14 +7,6 @@ from src.tag_graph import TagGraph
 from src.geometry import calculate_tag_corners, get_center_from_corners
 from src.visualization import plot_tags, plot_tags_2d
 
-#1 TODO: load video and camera calibration file
-#3 TODO: detect april tags in video
-#2 TODO: correct video against calibration
-#  TODO: make a tree on how tags are connected
-#4 TODO: calculate relative positons of april tags to each other for each frame
-#5 TODO: fuse the data to make a coherent map
-#6 TODO: add some random fun stuff when still motivated
-
 def main():
     
     origin_tag          = 3 # let's use this as an origin
@@ -46,6 +38,8 @@ def main():
     frames.append(last_frame)
     for frame in get_X_frames(video_path=video_path, number_of_frames=3):
         frames.append(frame) #TODO: don't; also why doesn't it work with even numbers?
+        
+    # Detect April tags in the selected subset of frames
     for frame in frames:
         detected_tags.append(detect_april_tag_in_frame(frame=frame, 
                                                 tag_standard="tagStandard52h13",
